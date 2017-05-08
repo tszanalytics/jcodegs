@@ -15,18 +15,18 @@
 ####        Note: iB0 = prior precision matrix = inv(prior variance matrix)
 ####              b0 must be a column Vector
 
-function gsreg(y,X; M=10000, burnin = Int(floor(M/10.0)),tau=1.0,iB0=0.0001,b0=-99.0,d0=0.0001, a0=3.0)
+function gsreg(y,X; M=10000, burnin = Int(floor(M/10.0)),tau=1.0,iB0=0.0001,b0=0.0,d0=0.0001, a0=3.0)
     # values outside iterations
     n, k = size(X)
     a1 = a0 + n
     # default uninformative priors
-    if b0==-99.0
-        b0 = zeros(k)      # coefficient mean and var.
+    if b0 == 0.0
+        b0 = zeros(k)
+    end
+    if iB0 == 0.0001     # coefficient mean and var.
         B0 = ones(k)*10000.0
         mB0 = diagm(B0)
         iB0 = inv(mB0)
-        a0 = 3.0
-        d0 = 0.0001
     end
 
     bdraws = zeros(M,k)
