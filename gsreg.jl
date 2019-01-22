@@ -24,8 +24,8 @@ function gsreg(y,X; M=10000, burnin = Int(floor(M/10.0)),tau=1.0,iB0=0.0001,b0=0
         b0 = zeros(k)
     end
     if iB0 == 0.0001     # coefficient mean and var.
-        B0 = ones(k)*10000.0
-        mB0 = diagm(B0)
+        B0 = ones(k).*10000.0
+        mB0 = Diagonal(B0)
         iB0 = inv(mB0)
     end
 
@@ -36,20 +36,20 @@ function gsreg(y,X; M=10000, burnin = Int(floor(M/10.0)),tau=1.0,iB0=0.0001,b0=0
 
     # draw betas
         Db = inv(X'*X.*tau[1] + iB0)
-        db = X'y*tau[1] + iB0*b0
-        H = chol(Hermitian(Db))
-        betas = Db*db + H'*randn(k,1)
+        db = X'y.*tau[1] + iB0*b0
+        H = cholesky(Hermitian(Db))
+        betas = Db*db + H.U*randn(k,1)
 
     # draw sigma sq.
     #### N.B. second parameter is inverse of Greenberg/Koop defns.!
-        d1 = d0 + (y-X*betas)'*(y-X*betas)
+        d1 = d0 .+ (y-X*betas)'*(y-X*betas)
         tau = rand(Gamma(a1[1]/2,2/d1[1]),1)
         sig2 = 1/tau[1]
 
     # store draws
         if i > burnin
             j = i - burnin
-            bdraws[j,:] = betas.'
+            bdraws[j,:] = betas'
             s2draws[j] = sig2
         end
 

@@ -1,18 +1,16 @@
 # example of using gsreg function for Gibbs linear regression
-using Distributions
-using Plots
-pyplot()
+using Distributions, Plots, StatPlots, LinearAlgebra, Random
+Random.seed!(1235)
 
 # generate data
-srand(13457)
 n = 100
-trusig = 0.05
+trusig = 2.0
 x = rand(Normal(1, 2), n)
 e = rand(Normal(0, trusig), n)
-y = 1.0 + 2.0*x + e
-scatter([x y],palette = :blues, alpha = 0.3,legend=false,gridcolor=:grey,
-             xlab = "x", ylab = "y")
+y = 1.0 .+ 2.0.*x + e
 
+cor(y,x)
+plot(x,y, st=:scatter,linecolor=:blue, alpha=0.3, gridcolor=:grey, legend=false, xlab = "x", ylab = "y")
 # data set up for use in function
 n = length(y)
 X = [ones(n) x]
@@ -41,7 +39,6 @@ std(bs[:,2])
 mean(s2s)
 std(s2s)
 
-using PlotRecipes
 include("mcmc_sample_plot.jl")
 mcmc_sample_plot(bs[:,2])
 vline!([0.0 2.0], color = :green, label=["" "true mean"])  # add vertical line
